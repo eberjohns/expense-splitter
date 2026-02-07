@@ -83,6 +83,20 @@ Calculate Settlement
 </button>
 </div>
 
+<div class="grid grid-cols-2 gap-3 mt-3">
+    <button onclick="downloadJSON()"
+        class="bg-indigo-100 text-indigo-700 py-3 rounded-xl font-black uppercase text-xs">
+        Download JSON
+    </button>
+
+    <button onclick="document.getElementById('jsonFile').click()"
+        class="bg-slate-200 text-slate-700 py-3 rounded-xl font-black uppercase text-xs">
+        Restore JSON
+    </button>
+</div>
+
+<input id="jsonFile" type="file" accept="application/json" hidden onchange="restoreJSON(event)">
+
 <!-- SETTLEMENT -->
 <div id="settlementCard" class="bg-indigo-700 text-white rounded-3xl p-6 hidden">
 <h2 class="text-lg font-black uppercase mb-4">Final Settlement</h2>
@@ -106,6 +120,52 @@ function addMember() {
     members.push(name);
     memberInput.value = '';
     save(); renderMembers();
+}
+
+function restoreJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            const data = JSON.parse(e.target.result);
+
+            if (!Array.isArray(data.members) || !Array.isArray(data.transactions)) {
+                throw new Error("Invalid file format");
+            }
+
+            members = data.members;
+            transactions = data.transactions;
+
+            save();
+            renderMembers();
+            renderHistory();
+
+            alert("Data restored successfully!");
+        } catch (err) {
+            alert("Invalid JSON file");
+        }
+    };
+    reader.readAsText(file);
+}
+
+function downloadJSON() {
+    const data = {
+        members,
+        transactions,
+        exportedAt: new Date().toISOString()
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        { type: "application/json" }
+    );
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "expense-log.json";
+    a.click();
 }
 
 function removeMember(i) {
