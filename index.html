@@ -3,70 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HackSplit - Expense Tracker</title>
+    <title>HackSplit Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .member-chip.selected { background-color: #10b981; color: white; border-color: #059669; }
         .member-chip { cursor: pointer; transition: all 0.2s; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen pb-10">
+<body class="bg-slate-50 min-h-screen pb-10 text-slate-800">
 
     <div class="max-w-md mx-auto p-4">
-        <header class="text-center py-6">
-            <h1 class="text-3xl font-bold text-indigo-600">HackSplit</h1>
-            <p class="text-gray-500 text-sm">Frontend-only Hackathon Expense Manager</p>
+        <header class="py-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-black text-indigo-700 uppercase tracking-tighter">HackSplit</h1>
+                <p class="text-xs text-slate-500 font-bold">EXPENSE LOG & SETTLEMENT</p>
+            </div>
+            <button onclick="clearAll()" class="text-[10px] bg-red-100 text-red-600 px-2 py-1 rounded font-bold uppercase">Reset</button>
         </header>
 
-        <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
-            <h2 class="font-semibold mb-3">1. Team Members</h2>
-            <div class="flex gap-2 mb-3">
-                <input id="memberInput" type="text" placeholder="Name" class="flex-1 border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-400">
-                <button onclick="addMember()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold">+</button>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-4">
+            <h2 class="text-sm font-black uppercase mb-3 text-slate-400">1. Team</h2>
+            <div class="flex gap-2 mb-4">
+                <input id="memberInput" type="text" placeholder="Add member..." class="flex-1 bg-slate-100 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                <button onclick="addMember()" class="bg-indigo-600 text-white w-12 rounded-xl font-bold shadow-lg shadow-indigo-200">+</button>
             </div>
             <div id="memberList" class="flex flex-wrap gap-2"></div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
-            <h2 class="font-semibold mb-3">2. Add Entry</h2>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-4">
+            <h2 class="text-sm font-black uppercase mb-3 text-slate-400">2. New Entry</h2>
             
-            <div class="flex bg-gray-100 rounded-lg p-1 mb-4">
-                <button onclick="setTxType('expense')" id="btnExp" class="flex-1 py-1 rounded-md bg-white shadow-sm font-medium">Expense</button>
-                <button onclick="setTxType('income')" id="btnInc" class="flex-1 py-1 rounded-md font-medium">Income</button>
-            </div>
+            <div class="space-y-4">
+                <div class="flex bg-slate-100 rounded-xl p-1">
+                    <button onclick="setTxType('expense')" id="btnExp" class="flex-1 py-2 rounded-lg bg-white shadow-sm font-bold text-xs uppercase">Expense</button>
+                    <button onclick="setTxType('income')" id="btnInc" class="flex-1 py-2 rounded-lg font-bold text-xs uppercase text-slate-400">Income</button>
+                </div>
 
-            <div class="space-y-3">
-                <input id="txDesc" type="text" placeholder="Description (e.g. Pizza)" class="w-full border rounded-lg px-3 py-2 outline-none">
-                <input id="txAmount" type="number" placeholder="Amount" class="w-full border rounded-lg px-3 py-2 outline-none">
+                <input id="txDesc" type="text" placeholder="Description (e.g., Train Ticket)" class="w-full bg-slate-100 border-none rounded-xl px-4 py-3 text-sm outline-none">
+                <input id="txAmount" type="number" placeholder="Total Amount (₹)" class="w-full bg-slate-100 border-none rounded-xl px-4 py-3 text-sm font-bold outline-none">
                 
                 <div>
-                    <label class="text-xs text-gray-500 font-bold uppercase" id="payerLabel">Who Paid?</label>
-                    <select id="txPayer" class="w-full border rounded-lg px-3 py-2 outline-none mt-1"></select>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1" id="payerLabel">Who Paid?</label>
+                    <select id="txPayer" class="w-full bg-slate-100 border-none rounded-xl px-4 py-3 text-sm mt-1 outline-none appearance-none"></select>
                 </div>
 
-                <div>
-                    <label class="text-xs text-gray-500 font-bold uppercase">Split Between (Tap to deselect)</label>
-                    <div id="splitSelector" class="flex flex-wrap gap-2 mt-2"></div>
+                <div class="pt-2 border-t border-slate-100">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Split Between</label>
+                        <label class="flex items-center text-[10px] font-black uppercase text-indigo-600 cursor-pointer">
+                            <input type="checkbox" id="customSplitCheck" onchange="toggleSplitUI()" class="mr-1"> Custom Split
+                        </label>
+                    </div>
+                    <div id="splitSelector" class="space-y-2"></div>
                 </div>
 
-                <button onclick="addTransaction()" class="w-full bg-green-500 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-green-600">Add Entry</button>
+                <button onclick="addTransaction()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">Add to Log</button>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold">3. Transactions</h2>
-                <button onclick="clearAll()" class="text-red-500 text-xs font-bold uppercase">Reset All</button>
-            </div>
-            <div id="txHistory" class="space-y-2 max-h-60 overflow-y-auto mb-4"></div>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-4">
+            <h2 class="text-sm font-black uppercase mb-4 text-slate-400">3. Transaction Log</h2>
+            <div id="txHistory" class="space-y-3 max-h-80 overflow-y-auto mb-6"></div>
             
-            <button onclick="calculateSettlement()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg mb-3">Calculate Debts</button>
-            <button onclick="downloadResults()" class="w-full border border-indigo-600 text-indigo-600 py-2 rounded-xl font-bold">Download Report</button>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="calculateSettlement()" class="bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg">Calculate</button>
+                <button onclick="downloadResults()" class="border-2 border-slate-200 text-slate-600 py-4 rounded-2xl font-black uppercase text-xs tracking-widest">Download Report</button>
+            </div>
         </div>
 
-        <div id="settlementCard" class="bg-indigo-900 text-white rounded-xl shadow-xl p-6 hidden">
-            <h2 class="text-xl font-bold mb-4">Final Settlements</h2>
-            <div id="settlementList" class="space-y-3"></div>
+        <div id="settlementCard" class="bg-indigo-700 text-white rounded-3xl shadow-2xl p-6 hidden">
+            <h2 class="text-lg font-black uppercase mb-4 tracking-tight">Final Settlement</h2>
+            <div id="settlementList" class="space-y-3 text-sm font-medium"></div>
         </div>
     </div>
 
@@ -74,141 +82,131 @@
         let members = JSON.parse(localStorage.getItem('hs_members')) || [];
         let transactions = JSON.parse(localStorage.getItem('hs_txs')) || [];
         let currentType = 'expense';
-        let splitSelection = [];
 
-        function init() {
-            renderMembers();
-            renderHistory();
-            updateSplitSelector();
-        }
+        function init() { renderMembers(); renderHistory(); }
 
         function addMember() {
             const name = document.getElementById('memberInput').value.trim();
             if (name && !members.includes(name)) {
                 members.push(name);
                 document.getElementById('memberInput').value = '';
-                save();
-                renderMembers();
+                save(); renderMembers();
             }
-        }
-
-        function setTxType(type) {
-            currentType = type;
-            document.getElementById('btnExp').className = type === 'expense' ? 'flex-1 py-1 rounded-md bg-white shadow-sm font-medium' : 'flex-1 py-1 rounded-md font-medium';
-            document.getElementById('btnInc').className = type === 'income' ? 'flex-1 py-1 rounded-md bg-white shadow-sm font-medium' : 'flex-1 py-1 rounded-md font-medium';
-            document.getElementById('payerLabel').innerText = type === 'expense' ? 'Who Paid?' : 'Who Received?';
         }
 
         function renderMembers() {
             const list = document.getElementById('memberList');
             const select = document.getElementById('txPayer');
-            list.innerHTML = '';
-            select.innerHTML = '';
-            
+            list.innerHTML = ''; select.innerHTML = '';
             members.forEach(m => {
-                list.innerHTML += `<span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">${m}</span>`;
+                list.innerHTML += `<span class="bg-indigo-50 text-indigo-600 border border-indigo-100 px-3 py-1 rounded-lg text-xs font-bold">${m}</span>`;
                 select.innerHTML += `<option value="${m}">${m}</option>`;
             });
-            updateSplitSelector();
+            toggleSplitUI();
         }
 
-        function updateSplitSelector() {
+        function toggleSplitUI() {
+            const isCustom = document.getElementById('customSplitCheck').checked;
             const container = document.getElementById('splitSelector');
             container.innerHTML = '';
-            splitSelection = [...members];
-            
             members.forEach(m => {
-                const chip = document.createElement('div');
-                chip.innerText = m;
-                chip.className = 'member-chip selected border px-3 py-1 rounded-lg text-sm font-medium';
-                chip.onclick = () => {
-                    chip.classList.toggle('selected');
-                    if(splitSelection.includes(m)) {
-                        splitSelection = splitSelection.filter(x => x !== m);
-                    } else {
-                        splitSelection.push(m);
-                    }
-                };
-                container.appendChild(chip);
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between bg-slate-50 p-2 rounded-xl";
+                if (isCustom) {
+                    div.innerHTML = `<span class="text-sm font-bold ml-2">${m}</span><input type="number" data-member="${m}" class="custom-amt w-20 bg-white border border-slate-200 rounded-lg px-2 py-1 text-sm font-mono outline-none" placeholder="0">`;
+                } else {
+                    div.className += " member-chip selected cursor-pointer";
+                    div.innerHTML = `<span class="text-sm font-bold ml-2">${m}</span><span class="check-icon">✓</span>`;
+                    div.onclick = () => { div.classList.toggle('selected'); div.classList.toggle('opacity-40'); };
+                }
+                container.appendChild(div);
             });
+        }
+
+        function setTxType(type) {
+            currentType = type;
+            document.getElementById('btnExp').className = type === 'expense' ? 'flex-1 py-2 rounded-lg bg-white shadow-sm font-bold text-xs uppercase' : 'flex-1 py-2 rounded-lg font-bold text-xs uppercase text-slate-400';
+            document.getElementById('btnInc').className = type === 'income' ? 'flex-1 py-2 rounded-lg bg-white shadow-sm font-bold text-xs uppercase' : 'flex-1 py-2 rounded-lg font-bold text-xs uppercase text-slate-400';
         }
 
         function addTransaction() {
             const desc = document.getElementById('txDesc').value;
             const amount = parseFloat(document.getElementById('txAmount').value);
             const payer = document.getElementById('txPayer').value;
+            const isCustom = document.getElementById('customSplitCheck').checked;
+            let splitDetails = {};
 
-            if (!desc || isNaN(amount) || splitSelection.length === 0) return alert("Please fill all fields");
+            if (isCustom) {
+                let sum = 0;
+                document.querySelectorAll('.custom-amt').forEach(input => {
+                    const val = parseFloat(input.value) || 0;
+                    if (val > 0) { splitDetails[input.dataset.member] = val; sum += val; }
+                });
+                if (Math.abs(sum - amount) > 0.1) return alert("Sum doesn't match total!");
+            } else {
+                const selected = Array.from(document.querySelectorAll('.member-chip.selected')).map(c => c.innerText.replace('✓', '').trim());
+                if (selected.length === 0) return alert("Select someone!");
+                selected.forEach(m => splitDetails[m] = amount / selected.length);
+            }
 
-            transactions.push({
-                type: currentType,
-                desc,
-                amount,
-                payer,
-                splitWith: [...splitSelection]
-            });
-
-            save();
-            renderHistory();
-            // Reset inputs
-            document.getElementById('txDesc').value = '';
-            document.getElementById('txAmount').value = '';
+            if (!desc || isNaN(amount)) return alert("Fill fields!");
+            transactions.push({ type: currentType, desc, amount, payer, splits: splitDetails });
+            save(); renderHistory();
+            document.getElementById('txDesc').value = ''; document.getElementById('txAmount').value = '';
         }
 
         function renderHistory() {
             const container = document.getElementById('txHistory');
-            container.innerHTML = '';
-            transactions.slice().reverse().forEach((tx, idx) => {
-                container.innerHTML += `
-                    <div class="flex justify-between items-center text-sm p-2 border-b">
-                        <div>
-                            <p class="font-bold">${tx.desc} <span class="${tx.type === 'income' ? 'text-green-600' : 'text-red-500'}">(${tx.type})</span></p>
-                            <p class="text-xs text-gray-500">${tx.payer} paid for ${tx.splitWith.join(', ')}</p>
-                        </div>
-                        <p class="font-mono font-bold">₹${tx.amount}</p>
-                    </div>
-                `;
-            });
+            container.innerHTML = transactions.slice().reverse().map(tx => `
+                <div class="bg-slate-50 p-2 rounded-lg border-l-4 ${tx.type === 'expense' ? 'border-red-400' : 'border-green-400'} text-[11px]">
+                    <div class="flex justify-between font-bold"><span>${tx.desc}</span><span>₹${tx.amount}</span></div>
+                    <div class="text-slate-400 italic">By ${tx.payer} for ${Object.keys(tx.splits).join(', ')}</div>
+                </div>`).join('');
         }
 
         function calculateSettlement() {
-            let balances = {};
-            members.forEach(m => balances[m] = 0);
+            let pairDebts = {}; // key: "PersonA-PersonB"
 
+            // 1. Calculate raw debts for every transaction
             transactions.forEach(tx => {
-                const share = tx.amount / tx.splitWith.length;
-                if (tx.type === 'expense') {
-                    balances[tx.payer] += tx.amount;
-                    tx.splitWith.forEach(m => balances[m] -= share);
-                } else {
-                    balances[tx.payer] -= tx.amount;
-                    tx.splitWith.forEach(m => balances[m] += share);
-                }
+                const amount = parseFloat(tx.amount);
+                const participants = Object.keys(tx.splits);
+                
+                participants.forEach(p => {
+                    if (p !== tx.payer) {
+                        // We always store the key alphabetically so "Eber-Nitto" 
+                        // is the same as "Nitto-Eber"
+                        const pair = [p, tx.payer].sort();
+                        const key = pair.join('---');
+                        
+                        if (!pairDebts[key]) pairDebts[key] = {};
+                        // Track who owes who within this specific pair
+                        pairDebts[key][p] = (pairDebts[key][p] || 0) + tx.splits[p];
+                    }
+                });
             });
 
-            let debtors = [], creditors = [];
-            for (let m in balances) {
-                if (balances[m] < -0.01) debtors.push({ name: m, amt: Math.abs(balances[m]) });
-                else if (balances[m] > 0.01) creditors.push({ name: m, amt: balances[m] });
+            // 2. Net the debts for each pair
+            let finalOutput = [];
+            for (let key in pairDebts) {
+                const [personA, personB] = key.split('---');
+                const aOwesB = pairDebts[key][personA] || 0;
+                const bOwesA = pairDebts[key][personB] || 0;
+
+                if (aOwesB > bOwesA) {
+                    finalOutput.push(`<b>${personA}</b> pay <b>${personB}</b>: ₹${(aOwesB - bOwesA).toFixed(2)}`);
+                } else if (bOwesA > aOwesB) {
+                    finalOutput.push(`<b>${personB}</b> pay <b>${personA}</b>: ₹${(bOwesA - aOwesB).toFixed(2)}`);
+                }
             }
 
-            const results = [];
-            let i = 0, j = 0;
-            while (i < debtors.length && j < creditors.length) {
-                let payAmt = Math.min(debtors[i].amt, creditors[j].amt);
-                results.push(`${debtors[i].name} pays **${creditors[j].name}**: ₹${payAmt.toFixed(2)}`);
-                
-                debtors[i].amt -= payAmt;
-                creditors[j].amt -= payAmt;
-
-                if (debtors[i].amt < 0.01) i++;
-                if (creditors[j].amt < 0.01) j++;
-            }
-
+            // 3. Display
             const resDiv = document.getElementById('settlementList');
-            const card = document.getElementById('settlementCard');
-            resDiv.innerHTML = results.length ? results.map(r => `<p class="border-b border-indigo-700 pb-2">${r}</p>`).join('') : '<p>Everyone is even!</p>';
-            card.classList.remove('hidden');
+            document.getElementById('settlementCard').classList.remove('hidden');
+            
+            resDiv.innerHTML = finalOutput.length > 0 
+                ? finalOutput.map(item => `<div class="border-b border-indigo-400/30 py-2">${item}</div>`).join('')
+                : "No debts found!";
         }
 
         function save() {
@@ -216,23 +214,20 @@
             localStorage.setItem('hs_txs', JSON.stringify(transactions));
         }
 
-        function clearAll() {
-            if(confirm("Wipe all data for this session?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
+        function clearAll() { if(confirm("Reset?")) { localStorage.clear(); location.reload(); } }
 
         function downloadResults() {
-            const content = transactions.map(t => `${t.desc}: ${t.amount} by ${t.payer}`).join('\n');
-            const blob = new Blob(["HACKATHON EXPENSES\n\n" + content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
+            let report = "HACKATHON EXPENSE REPORT\n\n";
+            transactions.forEach(tx => {
+                report += `${tx.desc} - ₹${tx.amount} by ${tx.payer} (split among ${Object.keys(tx.splits).length})\n`;
+            });
+            report += "\nFINAL SETTLEMENTS\n" + document.getElementById('settlementList').innerText;
+            const blob = new Blob([report], { type: 'text/plain' });
             const a = document.createElement('a');
-            a.href = url;
-            a.download = 'hackathon-expenses.txt';
+            a.href = URL.createObjectURL(blob);
+            a.download = 'report.txt';
             a.click();
         }
-
         init();
     </script>
 </body>
